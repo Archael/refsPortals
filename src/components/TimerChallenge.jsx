@@ -1,8 +1,10 @@
-import { useRef, useState } from 'react';
-import ResultModal from './ResultModal';
+import { useState, useRef } from 'react';
+
+import ResultModal from './ResultModal.jsx';
+
+// let timer;
 
 export default function TimerChallenge({ title, targetTime }) {
-  //useref vs variables: userefs are instantiated for each instance rather than shared between instances of the component
   const timer = useRef();
   const dialog = useRef();
 
@@ -10,31 +12,33 @@ export default function TimerChallenge({ title, targetTime }) {
   const [timerExpired, setTimerExpired] = useState(false);
 
   function handleStart() {
-    setTimerStarted(true);
     timer.current = setTimeout(() => {
       setTimerExpired(true);
-      dialog.current.showModal();
+      dialog.current.open();
     }, targetTime * 1000);
+
+    setTimerStarted(true);
   }
+
   function handleStop() {
     clearTimeout(timer.current);
   }
+
   return (
     <>
-      <ResultModal ref={dialog} targetTime={targetTime} result={'lost'} />
-
+      <ResultModal ref={dialog} targetTime={targetTime} result="lost" />
       <section className="challenge">
         <h2>{title}</h2>
         <p className="challenge-time">
           {targetTime} second{targetTime > 1 ? 's' : ''}
         </p>
         <p>
-          <button onClick={handleStart}>
-            {timerStarted ? 'Stop' : 'Start'} challenge
+          <button onClick={timerStarted ? handleStop : handleStart}>
+            {timerStarted ? 'Stop' : 'Start'} Challenge
           </button>
         </p>
         <p className={timerStarted ? 'active' : undefined}>
-          {timerStarted ? 'Timer active' : 'Timer expired'}
+          {timerStarted ? 'Time is running...' : 'Timer inactive'}
         </p>
       </section>
     </>
